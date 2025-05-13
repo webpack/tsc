@@ -1,0 +1,23 @@
+name: Generate TSC Meeting Agenda
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  meeting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Webpack TSC Meeting Agenda
+        uses: 'pkgjs/meet@v0'
+        with:
+          issueTitle: 'TSC Meeting <%= date.toFormat("dd-MMMM-yyyy") %>'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          orgs: webpack,webpack-contrib
+          agendaLabel: 'tsc-agenda'
+          meetingLabels: 'meeting'
+          schedules: '2025-05-12T17:00:00.0Z/P2W'
+          createWithin: 'P1W'
+          issueTemplate: 'meeting-agenda.md'
