@@ -1,4 +1,5 @@
 name: Generate TSC Meeting Agenda
+
 on:
   pull_request:
   push:
@@ -6,9 +7,11 @@ on:
       - main
   schedule:
     - cron: '0 0 * * *'
+
 jobs:
   meeting:
     runs-on: ubuntu-latest
+
     steps:
       - name: Webpack TSC Meeting Agenda
         uses: 'pkgjs/meet@v0'
@@ -18,6 +21,6 @@ jobs:
           orgs: webpack,webpack-contrib
           agendaLabel: 'tsc-agenda'
           meetingLabels: 'meeting'
-          schedules: '2025-05-12T17:00:00.0Z/P2W'
-          createWithin: 'P1W'
+          schedules: '2025-04-28T17:00:00.0Z/P2W'
+          createWithin: 'P7D'
           issueTemplate: 'meeting-agenda.md'
