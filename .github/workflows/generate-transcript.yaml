@@ -48,7 +48,8 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "Files changed."
-            git commit -a -m 'Add ${{ github.event.issue.title }} transcript'
+            git add --all
+            git commit -m 'Add ${{ github.event.issue.title }} transcript'
             echo "TRANSCRIPT_GENERATED=true" >> $GITHUB_ENV
           fi
 
