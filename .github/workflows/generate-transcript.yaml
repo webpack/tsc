@@ -8,7 +8,7 @@ jobs:
   generate-trancript:
     runs-on: ubuntu-latest
 
-    if: contains(github.event.issue.labels.*.name, 'tsc meeting')
+    if: contains(github.event.issue.labels.*.name, 'meeting')
 
     env:
       TRANSCRIPT_GENERATED: false
