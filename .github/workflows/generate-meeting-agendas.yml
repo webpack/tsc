@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   meeting:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
         uses: 'pkgjs/meet@v0'
         with:
           issueTitle: 'TSC Meeting <%= date.toFormat("dd-MMMM-yyyy") %>'
-          token: ${{ secrets.WEBPACK_GITHUB_BOT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           orgs: webpack,webpack-contrib
           agendaLabel: 'tsc-agenda'
           meetingLabels: 'meeting'
