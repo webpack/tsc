@@ -21,6 +21,6 @@ jobs:
           orgs: webpack,webpack-contrib
           agendaLabel: 'tsc-agenda'
           meetingLabels: 'meeting'
-          schedules: '2025-05-05T17:00:00.0Z/P2W'
+          schedules: '2025-05-05T16:00:00.0Z/P2W'
           createWithin: 'P7D'
           issueTemplate: 'meeting-agenda.md'
