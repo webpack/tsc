@@ -4,6 +4,10 @@ on:
   issues:
     types: [closed]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   generate-trancript:
     runs-on: ubuntu-latest
@@ -59,6 +63,7 @@ jobs:
         if: env.TRANSCRIPT_GENERATED == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
+          base: 'main'
           commit-message: Add ${{ github.event.issue.title }} transcript
           title: Add ${{ github.event.issue.title }} transcript
           branch: generate-meeting-transcript
