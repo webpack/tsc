@@ -50,26 +50,22 @@ jobs:
           git config user.email "webpack[bot]@users.noreply.github.com"
           git config user.name "Webpack Bot"
 
-      - name: Commit generated transcript (if changed)
+      - name: Add changed files (if changed)
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "Files changed."
             git add --all
-            git commit -m 'Add ${{ github.event.issue.title }} transcript'
             echo "TRANSCRIPT_GENERATED=true" >> $GITHUB_ENV
           fi
 
-      - name: Create Pull Request
+      - name: Create Pull Request (if changed)
         if: env.TRANSCRIPT_GENERATED == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
           base: 'main'
-          commit-message: Add ${{ github.event.issue.title }} transcript
-          title: Add ${{ github.event.issue.title }} transcript
+          commit-message: 'chore: add ${{ github.event.issue.title }} transcript'
+          title: 'chore: add ${{ github.event.issue.title }} transcript'
           branch: generate-meeting-transcript
           branch-suffix: timestamp
-          author: Webpack Bot <webpack[bot]@users.noreply.github.com>
-          committer: Webpack Bot <webpack[bot]@users.noreply.github.com>
           body: |
             Add ${{ github.event.issue.title }} transcript.
 
