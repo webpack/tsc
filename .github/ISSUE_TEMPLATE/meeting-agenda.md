@@ -54,7 +54,7 @@ This meeting is open for anyone who wants to attend. Reminder to follow our [Cod
 
 ### Joining the meeting
 
-* Join [Webpack's Discord server](https://discord.gg/5sxFZPdx2k) then the #tsc channel
+* Join [Webpack's Discord server](https://discord.gg/5sxFZPdx2k) then the [#tsc-meetings](https://discord.com/channels/1180618526436888586/1374060261576540170) channel
 
 ---
 
