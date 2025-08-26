@@ -1,26 +1,5 @@
 # 08/25/2025 Webpack TSC Meeting Transcript
 
-**snitin315:** Hi there 👋
- * 👋🏾 @evenstensberg
-
-**evenstensberg:** Ayo!
-
-**alexander.akait:** Hello
-
-**snitin315:** Is everyone here?
-
-**wunderacle:** Hello there!
-
-**wunderacle:** Let's give it a few minutes.
-
-**snitin315:** Sure, react 👍 to this message when everyone is ready
- * 👍🏾 @evenstensberg, @snitin315
- * 👍 @wunderacle, @alexander.akait
-
-**snitin315:** Is Sean joining @evenstensberg ?
-
-**evenstensberg:** I've sent him a message on twitter but he havent seen it. We can continue
-
 **snitin315:** Cool, let’s start today’s meeting
 
 **snitin315:** First agenda item is https://github.com/webpack/tsc/issues/32
