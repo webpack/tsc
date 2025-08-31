@@ -12,17 +12,17 @@ const { TOKEN, ID, ISSUE_TITLE } = process.env;
 
 /**
  * Extract a date string from an automatically generated TSC Meeting issue title.
- * Issue title is formatted as "TSC meeting DD-MMMM-YYYY".
+ * Issue title is formatted as "TSC meeting DD-MM-YYYY".
  * https://github.com/eslint/eslint-github-bot/blob/460d2653de44eafa0c15c361a294f5ecf5d05840/src/plugins/recurring-issues/index.js#L235
  * @param {string} issueTitle The issue title from which to extract the date string.
  * @returns {string} The extracted date string.
  */
 const extractDateString = issueTitle => {
-  const [, dateString = null] = /(\d\d-.+-\d\d\d\d)$/u.exec(issueTitle) || [];
+  const [, dateString = null] = /(\d\d\d\d-\d\d-\d\d)$/u.exec(issueTitle) || [];
 
   if (!dateString) {
     throw new Error(
-      'Can\'t extract date from issue title. Expecting format "TSC meeting DD-MMMM-YYYY".'
+      'Can\'t extract date from issue title. Expecting format "TSC meeting YYYY-MM-DD".'
     );
   }
 
@@ -35,7 +35,7 @@ const extractDateString = issueTitle => {
  * @returns {string} The formatted date string.
  */
 const formatDate = dateString =>
-  moment(dateString, 'DD-MMMM-YYYY').format('MM/DD/YYYY');
+  moment(dateString, 'YYYY-MM-DD').format('MM/DD/YYYY');
 
 /**
  * Generates the transcript file output path.
