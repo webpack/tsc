@@ -1,0 +1,25 @@
+name: TSC Meeting Discord Reminder
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  send-discord-reminder:
+    runs-on: ubuntu-latest
+    if: github.event.issue.user.login == 'github-actions[bot]' && startsWith(github.event.issue.title, 'TSC Meeting')
+
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
+      ISSUE_URL: ${{ github.event.issue.html_url }}
+
+    steps:
+      - name: Send message to Discord
+        run: |
+          curl -sS -X POST -H "Content-Type: application/json" -d '{
+            "embeds": [{
+              "title": "'"$ISSUE_TITLE"'",
+              "url": "'"$ISSUE_URL"'
+            }]
+          }' "$DISCORD_WEBHOOK"
