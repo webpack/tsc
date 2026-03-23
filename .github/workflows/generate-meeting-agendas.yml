@@ -37,7 +37,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ steps.meeting.outputs.issueNumber }}
         run: |
-          ISSUE_JSON="$(gh issue view "$ISSUE_NUMBER" --repo webpack/tsc --json title,url)"
+          ISSUE_JSON="$(gh issue view "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --json title,url)"
           ISSUE_TITLE="$(echo "$ISSUE_JSON" | jq -r .title)"
           ISSUE_URL="$(echo "$ISSUE_JSON" | jq -r .url)"
 
