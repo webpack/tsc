@@ -15,4 +15,4 @@ jobs:
           org: webpack
           token: ${{ secrets.WEBPACK_GITHUB_BOT_TOKEN }}
           interaction-types: commit,pr,pr-review,pr-comment,issue,issue-comment
-          ignore-members: sokra,TheLarkInn
+          ignore-members: sokra,TheLarkInn,webpack-bot
