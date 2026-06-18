@@ -21,4 +21,4 @@ jobs:
           org: webpack
           token: ${{ steps.app-token.outputs.token }}
           interaction-types: commit,pr,pr-review,pr-comment,issue,issue-comment
-          ignore-members: sokra,TheLarkInn,webpack-bot
+          ignore-teams: alumni,bots
