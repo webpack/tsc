@@ -16,7 +16,7 @@ jobs:
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_PRIVATE_KEY }}
-      - uses: avivkeller/organization-auditor@3e155998973c09aa5fa7e88a72c8558b2c3665b0 # v1.1.0
+      - uses: avivkeller/organization-auditor@3ad5d12c1fe4618699c6b1e25e2857e51f7eedda
         with:
           org: webpack
           token: ${{ steps.app-token.outputs.token }}
