@@ -1,0 +1,128 @@
+{
+  "patches": {
+    "pkg:npm/flatted@3.3.3": {
+      "uuid": "bbacfc19-b3cc-48b1-9b6e-d32b49d0d669",
+      "exportedAt": "Wed, 22 Jul 2026 22:17:29 GMT",
+      "files": {
+        "cjs/index.js": {
+          "beforeHash": "c670a2b5fd9685c7b8290146a2f336ef4f6ddd495f611396a83d29429fc242af",
+          "afterHash": "63fb7569303d7b874ab33c544e329559aa1d6d11057dcdf533f9fe5df4291675"
+        },
+        "es.js": {
+          "beforeHash": "0fd2b6176ae3d91cb0d2bbba1784e10f740fc62f82cec207e8f258b4f901de8c",
+          "afterHash": "fe3204a076b4adbda36d449e8b823286279ad642ad1ea960e3f3e8a557c84a34"
+        },
+        "esm.js": {
+          "beforeHash": "68c071a145c6967f455cad63629a5644ad9268267f84739ed917a6132c8e1d1d",
+          "afterHash": "878da2667835b61898269b4b7aad258812cc540a8114a6bf25309a3df2582bac"
+        },
+        "esm/index.js": {
+          "beforeHash": "852549fb65192ad034b9cd4a1012f6a22d887f34408c0de35b3456cf817a9a02",
+          "afterHash": "33b2dd58f04b6678150d07126f5ecf26ea9a05e98669555703b6346eb6639cb0"
+        },
+        "index.js": {
+          "beforeHash": "ec33b51a7050ab4d2d7a1ec5a5c7485027e1f802a074ee6fe368d53acd67020f",
+          "afterHash": "2787261d9ea53a0469e60de256b73876b08dbdceac13ef0211b6dce9ba2d6978"
+        },
+        "min.js": {
+          "beforeHash": "683b172cc68fe1ba75f24436ddc03774f7b60ff59b5022d7e2c871e1d64c6cc9",
+          "afterHash": "1f393419e50ffcd148a04ea4360d60b3e29184a4e4e706db068a77c2d8139ba0"
+        }
+      },
+      "vulnerabilities": {
+        "GHSA-25h7-pfq9-p65f": {
+          "cves": [
+            "CVE-2026-32141"
+          ],
+          "summary": "flatted vulnerable to unbounded recursion DoS in parse() revive phase",
+          "severity": "HIGH",
+          "description": "## Summary\n\nflatted's `parse()` function uses a recursive `revive()` phase to resolve circular references in deserialized JSON. When given a crafted payload with deeply nested or self-referential `$` indices, the recursion depth is unbounded, causing a stack overflow that crashes the Node.js process.\n\n## Impact\n\nDenial of Service (DoS). Any application that passes untrusted input to `flatted.parse()` can be crashed by an unauthenticated attacker with a single request.\n\nflatted has ~87M weekly npm downloads and is used as the circular-JSON serialization layer in many caching and logging libraries.\n\n## Proof of Concept\n\n```javascript\nconst flatted = require('flatted');\n\n// Build deeply nested circular reference chain\nconst depth = 20000;\nconst arr = new Array(depth + 1);\narr[0] = '{\"a\":\"1\"}';\nfor (let i = 1; i <= depth; i++) {\n  arr[i] = `{\"a\":\"${i + 1}\"}`;\n}\narr[depth] = '{\"a\":\"leaf\"}';\n\nconst payload = JSON.stringify(arr);\nflatted.parse(payload); // RangeError: Maximum call stack size exceeded\n```\n\n## Fix\n\nThe maintainer has already merged an iterative (non-recursive) implementation in PR #88, converting the recursive `revive()` to a stack-based loop.\n\n## Affected Versions\n\nAll versions prior to the PR #88 fix."
+        }
+      },
+      "description": "",
+      "license": "",
+      "tier": "free"
+    },
+    "pkg:npm/ws@7.5.10": {
+      "uuid": "51bacc2a-c71a-4c70-ba31-9e9d5dc8dc9a",
+      "exportedAt": "Fri, 07 Aug 2026 20:53:19 GMT",
+      "files": {
+        "lib/receiver.js": {
+          "beforeHash": "32eecaf14756a9decdef635e306382eb6de4eb0589f28fec9e086a532af55830",
+          "afterHash": "74deaf6ecbea6716b31e6988567abd2c9f288e77e6dc4d06156ba15663e20918"
+        },
+        "lib/websocket-server.js": {
+          "beforeHash": "9e70fc620f7eb42c0936924edcc0f654a02cad653f21a6025bcd95861db6f867",
+          "afterHash": "06aadd3651af883af1f16186d10ade792b6c231aa4e55c2ad340fcbe2a851e24"
+        },
+        "lib/websocket.js": {
+          "beforeHash": "41b3f30386f73f0d9d986f2a50837afac2648899a15a872d93089fc469162dc4",
+          "afterHash": "783fb4a96edb189e82c4420f32ab53ba41fc0ed01ad1754bb2504db7163dc180"
+        }
+      },
+      "vulnerabilities": {
+        "GHSA-96hv-2xvq-fx4p": {
+          "cves": [
+            "CVE-2026-48779"
+          ],
+          "summary": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+          "severity": "HIGH",
+          "description": "### Impact\n\nA high volume of exceptionally small fragments and data chunks can be sent by a peer, with modest network traffic, to force the remote peer into allocating and holding structural wrappers that consume far more memory than the default documented message-size limit, leading to process termination due to OOM.\n\n### Proof of concept\n\n```js\nimport { WebSocket, WebSocketServer } from 'ws';\n\nconst wss = new WebSocketServer({ port: 0 }, function () {\n  const data = Buffer.alloc(1);\n  const options = { fin: false };\n  const { port } = wss.address();\n  const ws = new WebSocket(`ws://localhost:${port}`);\n\n  ws.on('open', function () {\n    (function send() {\n      ws.send(data, options, function (err) {\n        if (err) return;\n        send();\n      });\n    })();\n  });\n\n  ws.on('error', console.error);\n  ws.on('close', function (code, reason) {\n    console.log(`client close - code: ${code} reason: ${reason.toString()}`);\n  });\n});\n\nwss.on('connection', function (ws) {\n  ws.on('error', console.error);\n  ws.on('close', function (code, reason) {\n    console.log(`server close - code: ${code} reason: ${reason.toString()}`);\n  });\n});\n```\n\n### Patches\n\nThe vulnerability was fixed in ws@8.21.0 (https://github.com/websockets/ws/commit/bca91adf15677e47dbe4f959653452727be28b94) and backported to ws@7.5.11 (https://github.com/websockets/ws/commit/fd36cd864fcdf62a08273a99e19a7d975401fee8), ws@6.2.4 (https://github.com/websockets/ws/commit/86d3e8a5fb0246ed373860c5fbb0de88824a27f7), and ws@5.2.5 (https://github.com/websockets/ws/commit/b5372ac67bb97a773727b8e9f5035a8123556d53).\n\n### Workarounds\n\nIn vulnerable versions, the issue can be mitigated by lowering the value of the `maxPayload` option if possible.\n\n### Credits\n\nThe vulnerability was responsibly disclosed and fixed by [Nadav Magier](https://github.com/Nadav0077)."
+        }
+      },
+      "description": "",
+      "license": "",
+      "tier": "free"
+    },
+    "pkg:npm/minimatch@3.1.2": {
+      "uuid": "cedb0b5d-3ee6-4d6d-984e-d3c607ebb2be",
+      "exportedAt": "Sat, 28 Feb 2026 22:11:42 GMT",
+      "files": {
+        "package/minimatch.js": {
+          "beforeHash": "92f6edcacf6c67b0c9fe6594cb3eef9cdad4dd725b3bfed3423517ed325e12d0",
+          "afterHash": "00c65c675e8d6f5ba63a7b571e0bc63773f6c7bba0f4b3299fbbeed039c39a58"
+        }
+      },
+      "vulnerabilities": {
+        "GHSA-3ppc-4f35-3m26": {
+          "cves": [
+            "CVE-2026-26996"
+          ],
+          "summary": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+          "severity": "HIGH",
+          "description": "### Summary\n`minimatch` is vulnerable to Regular Expression Denial of Service (ReDoS) when a glob pattern contains many consecutive `*` wildcards followed by a literal character that doesn't appear in the test string. Each `*` compiles to a separate `[^/]*?` regex group, and when the match fails, V8's regex engine backtracks exponentially across all possible splits.\n\nThe time complexity is O(4^N) where N is the number of `*` characters. With N=15, a single `minimatch()` call takes ~2 seconds. With N=34, it hangs effectively forever.\n\n\n### Details\n_Give all details on the vulnerability. Pointing to the incriminated source code is very helpful for the maintainer._\n\n### PoC\nWhen minimatch compiles a glob pattern, each `*` becomes `[^/]*?` in the generated regex. For a pattern like `***************X***`:\n\n```\n/^(?!\\.)[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?X[^/]*?[^/]*?[^/]*?$/\n```\n\nWhen the test string doesn't contain `X`, the regex engine must try every possible way to distribute the characters across all the `[^/]*?` groups before concluding no match exists. With N groups and M characters, this is O(C(N+M, N)) — exponential.\n### Impact\nAny application that passes user-controlled strings to `minimatch()` as the pattern argument is vulnerable to DoS. This includes:\n- File search/filter UIs that accept glob patterns\n- `.gitignore`-style filtering with user-defined rules\n- Build tools that accept glob configuration\n- Any API that exposes glob matching to untrusted input\n\n----\n\nThanks to @ljharb for back-porting the fix to legacy versions of minimatch."
+        }
+      },
+      "description": "",
+      "license": "MIT",
+      "tier": "free"
+    },
+    "pkg:npm/minimatch@9.0.5": {
+      "uuid": "1f725918-7282-4d91-99f2-fd210fc5d1e3",
+      "exportedAt": "Thu, 26 Feb 2026 00:35:48 GMT",
+      "files": {
+        "package/dist/commonjs/ast.js": {
+          "beforeHash": "1e88b319ec4035ba9930e2eace6f0b66eaca450766b446ed1a32c7cb3b8a0f06",
+          "afterHash": "bc7d25e7d8eb8d233b10d77b4a57a69a841a60c1a27b52ebae74fc807554fd90"
+        },
+        "package/dist/esm/ast.js": {
+          "beforeHash": "24abc7acc71b3c66f24f745fc64061ed91653a4b04ef45e3a03ada61852d3568",
+          "afterHash": "caebbeadf5177c3c129f51b077373e21084d99d1bd5879c460823b570d1857ec"
+        }
+      },
+      "vulnerabilities": {
+        "GHSA-3ppc-4f35-3m26": {
+          "cves": [
+            "CVE-2026-26996"
+          ],
+          "summary": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+          "severity": "HIGH",
+          "description": "### Summary\n`minimatch` is vulnerable to Regular Expression Denial of Service (ReDoS) when a glob pattern contains many consecutive `*` wildcards followed by a literal character that doesn't appear in the test string. Each `*` compiles to a separate `[^/]*?` regex group, and when the match fails, V8's regex engine backtracks exponentially across all possible splits.\n\nThe time complexity is O(4^N) where N is the number of `*` characters. With N=15, a single `minimatch()` call takes ~2 seconds. With N=34, it hangs effectively forever.\n\n\n### Details\n_Give all details on the vulnerability. Pointing to the incriminated source code is very helpful for the maintainer._\n\n### PoC\nWhen minimatch compiles a glob pattern, each `*` becomes `[^/]*?` in the generated regex. For a pattern like `***************X***`:\n\n```\n/^(?!\\.)[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?X[^/]*?[^/]*?[^/]*?$/\n```\n\nWhen the test string doesn't contain `X`, the regex engine must try every possible way to distribute the characters across all the `[^/]*?` groups before concluding no match exists. With N groups and M characters, this is O(C(N+M, N)) — exponential.\n### Impact\nAny application that passes user-controlled strings to `minimatch()` as the pattern argument is vulnerable to DoS. This includes:\n- File search/filter UIs that accept glob patterns\n- `.gitignore`-style filtering with user-defined rules\n- Build tools that accept glob configuration\n- Any API that exposes glob matching to untrusted input\n\n----\n\nThanks to @ljharb for back-porting the fix to legacy versions of minimatch."
+        }
+      },
+      "description": "",
+      "license": "MIT",
+      "tier": "free"
+    }
+  }
+}
